@@ -1,4 +1,4 @@
-package com.github.memoize.git;
+package com.github.giterable;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -20,7 +20,7 @@ import java.util.*;
  * Date: 12/4/13
  * Time: 9:46 PM
  */
-public class GitIterableTests {
+public class GiterableTests {
 
     private Repository repo;
     private File repoDir;
@@ -65,7 +65,7 @@ public class GitIterableTests {
     @Test
     public void testCorrectFilesFound() throws IOException {
         ObjectId head = repo.resolve(Constants.HEAD);
-        GitIterable gi = new GitIterable(repo, head, null);
+        Giterable gi = new Giterable(repo, head, null);
 
         Set<String> testFileSet = new HashSet<String>();
         for (Object obj : gi) {

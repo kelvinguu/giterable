@@ -1,4 +1,4 @@
-package com.github.memoize.git;
+package com.github.giterable;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;

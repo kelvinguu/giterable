@@ -1,4 +1,4 @@
-package com.github.memoize.git;
+package com.github.giterable;
 
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;

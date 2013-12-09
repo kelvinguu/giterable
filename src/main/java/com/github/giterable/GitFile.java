@@ -1,4 +1,4 @@
-package com.github.memoize.git;
+package com.github.giterable;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package com.github.memoize.git;
+package com.github.giterable;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  * Time: 5:06 PM
  */
 
-public class GitIterator implements Iterator {
+public class Giterator implements Iterator {
 
     private TreeWalk treeWalk;
     private GitProcessor processor;
@@ -26,7 +26,7 @@ public class GitIterator implements Iterator {
     private boolean nextExists;
     private Object nextItem;
 
-    public GitIterator(Repository repo, ObjectId commitId, GitProcessor processor) throws IOException {
+    public Giterator(Repository repo, ObjectId commitId, GitProcessor processor) throws IOException {
 
         // obtain treeWalk
         RevTree commitTree = new RevWalk(repo).parseCommit(commitId).getTree();

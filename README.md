@@ -6,7 +6,6 @@ File repoPath = new File("demo_project/.git");
 String revisionStr = "master";
 // = "HEAD";
 // = "aec1f2040b0eeef41f0f37535f8b4c6334b2a610";
-// = "HEAD~1";
 
 Giterable gitFiles = new Giterable(repoPath, revisionStr);
 GitLoader loader = new GitLoader(repoPath);

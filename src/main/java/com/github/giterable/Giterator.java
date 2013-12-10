@@ -1,13 +1,13 @@
 package com.github.giterable;
 
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -18,65 +18,49 @@ import java.util.NoSuchElementException;
  * Time: 5:06 PM
  */
 
-public class Giterator implements Iterator {
+public class Giterator implements Iterator<File> {
 
     private TreeWalk treeWalk;
-    private GitProcessor processor;
+    private boolean nextExist;
 
-    private boolean nextExists;
-    private Object nextItem;
-
-    public Giterator(Repository repo, ObjectId commitId, GitProcessor processor) throws IOException {
-
-        // obtain treeWalk
-        RevTree commitTree = new RevWalk(repo).parseCommit(commitId).getTree();
+    public Giterator(Repository repo, ObjectId commitId, TreeFilter filter) throws IOException {
+        RevTree tree = new RevWalk(repo).parseCommit(commitId).getTree();
         treeWalk = new TreeWalk(repo);
-        treeWalk.addTree(commitTree);
+        treeWalk.addTree(tree);
         treeWalk.setRecursive(true);
-
-        if (processor == null) {
-            this.processor = new SimpleGitProcessor(repo);
-        } else {
-            this.processor = processor;
-            treeWalk.setFilter(processor.getFilter());
-        }
-
-        // TODO: does this make us miss the first item?
-        update();
+        treeWalk.setFilter(filter);
+        nextExist = treeWalk.next();
     }
 
+    @Override
+    public void finalize() throws Throwable {
+        treeWalk.release();
+        super.finalize();
+    }
+
+    @Override
     public boolean hasNext() {
-        return nextExists;
+        return nextExist;
     }
 
-    public Object next() {
-        Object returnItem;
-        if (nextExists) {
-            returnItem = nextItem;
-        } else {
+    @Override
+    public File next() {
+        if (!hasNext()) {
             throw new NoSuchElementException();
         }
 
-        update();
-        return returnItem;
-    }
+        File returnFile = new File(treeWalk.getPathString());
 
-    // TODO: we could get into messy state if update fails
-    private void update() {
-        // attempt to advance treeWalk
         try {
-            nextExists = treeWalk.next();
-            if (nextExists) {
-                nextItem = processor.process(treeWalk);
-            } else {
-                nextItem = null;
-            }
+            nextExist = treeWalk.next();
         } catch (IOException e) {
-            nextExists = false;
-            nextItem = null;
+            nextExist = false;
         }
+
+        return returnFile;
     }
 
+    @Override
     public void remove() {
         // remove does not do anything
     }

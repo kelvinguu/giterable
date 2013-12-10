@@ -1,19 +1,27 @@
 package com.github.giterable;
 
 import org.apache.commons.io.FileUtils;
+
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.filter.PathSuffixFilter;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * User: Kelvin
@@ -24,7 +32,7 @@ public class GiterableTests {
 
     private Repository repo;
     private File repoDir;
-    private Set<String> correctFileSet;
+    private Set<File> correctFileSet;
 
     @Rule
     public ExternalResource resource = new ExternalResource() {
@@ -32,16 +40,26 @@ public class GiterableTests {
         @Override
         protected void before() throws Throwable {
             // construct repo files
-            List<String> correctFiles = Arrays.asList("file1.txt", "sub/file2.txt");
-            correctFileSet = new HashSet<String>(correctFiles);
+            List<String> correctFilePaths = Arrays.asList(
+                    "README",
+                    "java/com/github/giterable/HelloWorld.java",
+                    "java/com/github/giterable/FarewellWorld.java",
+                    "lib/some.jar",
+                    "out/HelloWorld.class",
+                    "build/FarewellWorld.class",
+                    "zed/something.txt"
+                    );
 
             repoDir = Files.createTempDirectory("repoDir").toFile();
+            correctFileSet = new HashSet<File>();
+            for (String fp : correctFilePaths) {
+                File file = new File(fp);
 
-            for (String rp : correctFileSet) {
-                File file = new File(repoDir, rp);
-                File folder = file.getParentFile();
-                folder.mkdirs();
-                file.createNewFile();
+                File absFile = new File(repoDir, fp);
+                absFile.getParentFile().mkdirs();
+                absFile.createNewFile();
+
+                correctFileSet.add(file);
             }
 
             repo = FileRepositoryBuilder.create(new File(repoDir, ".git"));
@@ -64,15 +82,51 @@ public class GiterableTests {
 
     @Test
     public void testCorrectFilesFound() throws IOException {
-        ObjectId head = repo.resolve(Constants.HEAD);
-        Giterable gi = new Giterable(repo, head, null);
 
-        Set<String> testFileSet = new HashSet<String>();
-        for (Object obj : gi) {
-            GitFile gitFile = (GitFile) obj;
-            testFileSet.add(gitFile.getGitFilePath());
+        Giterable gi = new Giterable(repo.getDirectory(),"HEAD");
+
+        Set<File> testFileSet = new HashSet<File>();
+        for (File file : gi) {
+            testFileSet.add(file);
         }
 
         assertEquals(correctFileSet, testFileSet);
+    }
+
+    @Test
+    public void testMultipleLoops() throws IOException {
+        Giterable gi = new Giterable(repo.getDirectory(),"HEAD");
+
+        Set<File> fileSet1 = new HashSet<File>();
+        for (File file : gi) {
+            fileSet1.add(file);
+        }
+
+        Set<File> fileSet2 = new HashSet<File>();
+        for (File file : gi) {
+            fileSet2.add(file);
+        }
+
+        assertEquals(fileSet1, fileSet2);
+    }
+
+    @Test
+    public void testDifferentBranch() {
+        fail("Not tested yet.");
+    }
+
+    @Test
+    public void testFilter() throws IOException {
+        Giterable gi = new Giterable(repo.getDirectory(),"HEAD");
+        TreeFilter javaSuffix = PathSuffixFilter.create(".java");
+        gi.setFilter(javaSuffix);
+
+        for (File file : gi) {
+            System.out.println(file.getCanonicalPath());
+            String ext = FilenameUtils.getExtension(file.getName());
+            System.out.println(ext);
+            assertEquals("extension should be java", "java", ext);
+        }
+
     }
 }

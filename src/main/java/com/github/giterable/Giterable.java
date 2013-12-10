@@ -2,25 +2,52 @@ package com.github.giterable;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-/**
- * User: Kelvin
- * Date: 12/4/13
- * Time: 5:14 PM
- */
-public class Giterable implements Iterable {
+public class Giterable implements Iterable<File> {
 
-    private Giterator giterator;
+    private Repository repo;
+    private ObjectId commitId;
+    private TreeFilter filter;
 
-    public Giterable(Repository repo, ObjectId commitId, GitProcessor processor) throws IOException {
-        giterator = new Giterator(repo, commitId, processor);
+    public Giterable(File repoPath, String revisionStr, TreeFilter filter) throws IOException {
+        FileRepositoryBuilder repoBuilder = new FileRepositoryBuilder();
+        repoBuilder.setGitDir(repoPath);
+        repoBuilder.readEnvironment().findGitDir();
+        repo = repoBuilder.build();
+
+        commitId = repo.resolve(revisionStr);
+        this.filter = filter;
     }
 
-    public Iterator iterator() {
-        return giterator;
+    @Override
+    public void finalize() throws Throwable {
+        repo.close();
+        super.finalize();
+    }
+
+    public Giterable(File repoPath, String revisionStr) throws IOException {
+        this(repoPath, revisionStr, null);
+    }
+
+    public void setFilter(TreeFilter filter) {
+        this.filter = filter;
+    }
+
+    @Override
+    public Iterator<File> iterator() {
+        try {
+            return new Giterator(repo, commitId, filter);
+        } catch (IOException e) {
+            // TODO: how to handle this better?
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.github.giterable;
+package com.kelvingu.giterable;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;

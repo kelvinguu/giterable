@@ -1,5 +1,5 @@
-import com.github.giterable.Giterable;
-import com.github.giterable.GitLoader;
+import com.kelvingu.giterable.Giterable;
+import com.kelvingu.giterable.GitLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,6 @@ public class Demo {
         String revisionStr = "master";
         // String revisionStr = "HEAD";
         // String revisionStr = "aec1f2040b0eeef41f0f37535f8b4c6334b2a610";
-        // String revisionStr = "HEAD~1";
 
         System.out.println("Loading repository at:");
         System.out.println(repoPath.getCanonicalPath() + '\n');
@@ -23,8 +22,8 @@ public class Demo {
             String text = loader.getText(file, revisionStr);
             byte[] bytes = loader.getBytes(file, revisionStr);
 
-            System.out.println("- - - - - - - - - -");
             System.out.println(file.getPath());
+            System.out.println("- - - - - - - - - -");
             System.out.println(text + '\n');
         }
     }

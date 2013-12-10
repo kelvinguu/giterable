@@ -1,4 +1,4 @@
-package com.github.giterable;
+package com.kelvingu.giterable;
 
 import org.apache.commons.io.FileUtils;
 
@@ -40,8 +40,8 @@ public class GiterableTests {
             // construct repo files
             List<String> repoFilePaths = Arrays.asList(
                     "README",
-                    "java/com/github/giterable/HelloWorld.java",
-                    "java/com/github/giterable/FarewellWorld.java",
+                    "java/com/kelvingu/giterable/HelloWorld.java",
+                    "java/com/kelvingu/giterable/FarewellWorld.java",
                     "lib/some.jar",
                     "out/HelloWorld.class",
                     "build/FarewellWorld.class",

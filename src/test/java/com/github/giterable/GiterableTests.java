@@ -114,7 +114,6 @@ public class GiterableTests {
         TreeFilter javaSuffix = PathSuffixFilter.create(".java");
         gi.setFilter(javaSuffix);
 
-        // TODO: only do a single assert?
         for (File file : gi) {
             String ext = FilenameUtils.getExtension(file.getName());
             assertEquals("extension should be java", "java", ext);

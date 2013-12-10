@@ -1,9 +1,5 @@
 package com.github.giterable;
 
-import org.apache.commons.io.IOUtils;
-import org.eclipse.jgit.errors.CorruptObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -12,30 +8,35 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-/**
- * User: Kelvin
- * Date: 12/9/13
- * Time: 4:15 PM
- */
+
 public class GitLoader {
 
     Repository repo;
+    File repoDir;
 
     public GitLoader(File repoPath) throws IOException {
         FileRepositoryBuilder repoBuilder = new FileRepositoryBuilder();
         repoBuilder.setGitDir(repoPath);
         repoBuilder.readEnvironment().findGitDir();
         repo = repoBuilder.build();
+        repoDir = repo.getDirectory().getParentFile();
     }
 
     public byte[] getFileBytes(File file, String revisionStr) throws IOException {
         ObjectId commitId = repo.resolve(revisionStr);
         RevTree tree = new RevWalk(repo).parseCommit(commitId).getTree();
-        TreeWalk  treeWalk = TreeWalk.forPath(repo, file.getCanonicalPath(), tree);
+
+        Path pathAbsolute = Paths.get(file.getCanonicalPath());
+        Path pathBase = Paths.get(repoDir.getCanonicalPath());
+        Path pathRelative = pathBase.relativize(pathAbsolute);
+        String relativePathStr = pathRelative.toString();
+
+        TreeWalk treeWalk = TreeWalk.forPath(repo, relativePathStr, tree);
 
         ObjectLoader loader = repo.open(treeWalk.getObjectId(0));
         return loader.getBytes();

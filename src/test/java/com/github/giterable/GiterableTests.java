@@ -23,12 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * User: Kelvin
- * Date: 12/4/13
- * Time: 9:46 PM
- */
+
 public class GiterableTests {
+
+    // Integration tests for Giterable
 
     private Repository repo;
     private File repoDir;
@@ -40,7 +38,7 @@ public class GiterableTests {
         @Override
         protected void before() throws Throwable {
             // construct repo files
-            List<String> correctFilePaths = Arrays.asList(
+            List<String> repoFilePaths = Arrays.asList(
                     "README",
                     "java/com/github/giterable/HelloWorld.java",
                     "java/com/github/giterable/FarewellWorld.java",
@@ -52,14 +50,14 @@ public class GiterableTests {
 
             repoDir = Files.createTempDirectory("repoDir").toFile();
             correctFileSet = new HashSet<File>();
-            for (String fp : correctFilePaths) {
-                File file = new File(fp);
+            for (String fp : repoFilePaths) {
 
+                // convert to absolute file path
                 File absFile = new File(repoDir, fp);
                 absFile.getParentFile().mkdirs();
                 absFile.createNewFile();
 
-                correctFileSet.add(file);
+                correctFileSet.add(absFile);
             }
 
             repo = FileRepositoryBuilder.create(new File(repoDir, ".git"));
@@ -111,22 +109,17 @@ public class GiterableTests {
     }
 
     @Test
-    public void testDifferentBranch() {
-        fail("Not tested yet.");
-    }
-
-    @Test
     public void testFilter() throws IOException {
         Giterable gi = new Giterable(repo.getDirectory(),"HEAD");
         TreeFilter javaSuffix = PathSuffixFilter.create(".java");
         gi.setFilter(javaSuffix);
 
+        // TODO: only do a single assert?
         for (File file : gi) {
-            System.out.println(file.getCanonicalPath());
             String ext = FilenameUtils.getExtension(file.getName());
-            System.out.println(ext);
             assertEquals("extension should be java", "java", ext);
         }
 
     }
+
 }

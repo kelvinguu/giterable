@@ -12,16 +12,11 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- * User: Kelvin
- * Date: 12/4/13
- * Time: 5:06 PM
- */
-
 public class Giterator implements Iterator<File> {
 
     private TreeWalk treeWalk;
     private boolean nextExist;
+    private File repoDir;
 
     public Giterator(Repository repo, ObjectId commitId, TreeFilter filter) throws IOException {
         RevTree tree = new RevWalk(repo).parseCommit(commitId).getTree();
@@ -30,6 +25,7 @@ public class Giterator implements Iterator<File> {
         treeWalk.setRecursive(true);
         treeWalk.setFilter(filter);
         nextExist = treeWalk.next();
+        repoDir = repo.getDirectory().getParentFile();
     }
 
     @Override
@@ -49,7 +45,7 @@ public class Giterator implements Iterator<File> {
             throw new NoSuchElementException();
         }
 
-        File returnFile = new File(treeWalk.getPathString());
+        File returnFile = new File(repoDir, treeWalk.getPathString());
 
         try {
             nextExist = treeWalk.next();

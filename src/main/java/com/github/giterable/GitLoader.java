@@ -27,7 +27,7 @@ public class GitLoader {
         repoDir = repo.getDirectory().getParentFile();
     }
 
-    public byte[] getFileBytes(File file, String revisionStr) throws IOException {
+    public byte[] getBytes(File file, String revisionStr) throws IOException {
         ObjectId commitId = repo.resolve(revisionStr);
         RevTree tree = new RevWalk(repo).parseCommit(commitId).getTree();
 
@@ -42,7 +42,7 @@ public class GitLoader {
         return loader.getBytes();
     }
 
-    public String getFileText(File file, String revisionStr) throws IOException {
-        return new String(getFileBytes(file, revisionStr));
+    public String getText(File file, String revisionStr) throws IOException {
+        return new String(getBytes(file, revisionStr));
     }
 }

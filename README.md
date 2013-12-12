@@ -1,5 +1,5 @@
 # Giterable
-Iterate through files in your Git repo and load them.
+A Java package for iterating through files in your Git repo and loading them.
 
 ```java
 File repoPath = new File("demo_project/.git");
@@ -21,7 +21,7 @@ Giterable uses [JGit](http://www.eclipse.org/jgit/) to access Git repositories.
 
 # Usage
 1. Download the JGit jar file `org.eclipse.jgit.jar` at: http://www.eclipse.org/jgit/download/
-2. Download `giterable.jar`
+2. [Download](https://github.com/ke1vin/giterable/blob/master/giterable.jar) `giterable.jar`.
 3. Add both jars to your classpath when compiling and running your code.
 
 ```bash
@@ -29,7 +29,7 @@ $ javac -cp .:giterable.jar:jgit.jar Demo.java
 $ java -cp .:giterable.jar:jgit.jar Demo
 ```
 
-Here is how you would use Giterable in your code:
+Here's how to use Giterable in your code:
 
 ```java
 import com.kelvingu.giterable.Giterable;
@@ -88,9 +88,7 @@ demo_project/src/file2.txt
 Contents of file2.txt
 ```
 
-
-
-- to run the above demo, you can clone this repo and run `demo/demo.sh`
+To run the above demo, you can clone this repo and run `demo/demo.sh`
 
 ```bash
 $ git clone git@github.com:ke1vin/giterable.git
